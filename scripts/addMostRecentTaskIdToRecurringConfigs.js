@@ -7,7 +7,7 @@ admin.initializeApp({
   credential: admin.credential.applicationDefault(),
 });
 
-const LIMIT = 1;
+const LIMIT = 1000;
 
 const COLLECTION_RECURRING_CONFIGS = 'recurringConfigs';
 const COLLECTION_TASKS = 'tasks';
@@ -42,7 +42,7 @@ const COLLECTION_TASKS = 'tasks';
       .get();
 
     if (lastTaskForRecurringConfigQuerySnapshot.empty) {
-      console.log(`${rcId} ⚠️ No tasks found`);
+      console.log(`${rcId} ⚠️  No tasks found`);
       continue;
     }
 
