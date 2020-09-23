@@ -1,10 +1,11 @@
 {
-    "extends": [
-        "airbnb",
-        "prettier"
-    ],
-    "rules": {
-        // Let logs since these are scripts
-        "no-console": "off"
-    }
+  "extends": ["airbnb", "prettier"],
+  "rules": {
+    // Let logs since these are scripts
+    "no-console": "off",
+    // for-of loops are convenient for scripts and to use await
+    "no-restricted-syntax": "off",
+    "no-await-in-loop": "off",
+    "no-continue": "off"
+  }
 }
