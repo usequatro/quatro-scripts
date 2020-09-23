@@ -1,0 +1,32 @@
+{
+  "name": "quatro-scripts",
+  "version": "1.0.0",
+  "description": "One-off scripts for things like data migrations",
+  "private": true,
+  "scripts": {
+    "start": "npx babel-node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usequatro/quatro-scripts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/usequatro/quatro-scripts/issues"
+  },
+  "homepage": "https://github.com/usequatro/quatro-scripts#readme",
+  "dependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/node": "^7.10.5",
+    "@babel/preset-env": "^7.11.5",
+    "date-fns": "^2.16.1",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.9.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.21.0",
+    "eslint-plugin-react-hooks": "^4.1.2",
+    "firebase-admin": "^9.2.0"
+  }
+}

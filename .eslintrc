@@ -1,0 +1,10 @@
+{
+    "extends": [
+        "airbnb",
+        "prettier"
+    ],
+    "rules": {
+        // Let logs since these are scripts
+        "no-console": "off"
+    }
+}
