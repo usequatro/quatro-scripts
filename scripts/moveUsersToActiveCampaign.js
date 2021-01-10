@@ -49,8 +49,8 @@ const createContactFromUser = async (user, calendarCount = 0) => {
   };
 
   const response = await createContact(acPayload);
-  const activeCampaignId = response.contact.id;
-  if (!activeCampaignId) {
+  const activeCampaignContactId = response.contact.id;
+  if (!activeCampaignContactId) {
     console.info(JSON.stringify(response));
     throw new Error(
       `Active Campaign user not created for email ${user.email}. Contact ID not returned`,
@@ -59,19 +59,19 @@ const createContactFromUser = async (user, calendarCount = 0) => {
 
   await addContactToList({
     contactList: {
-      contact: activeCampaignId,
+      contact: activeCampaignContactId,
       list: isProd ? MAIN_LIST_ID : DEV_LIST_ID,
       status: 1,
     },
   });
 
-  return activeCampaignId;
+  return activeCampaignContactId;
 };
 
-const setUserInternalConfig = ({ userId, activeCampaignId, userProviders }) =>
+const setUserInternalConfig = ({ userId, activeCampaignContactId, userProviders }) =>
   admin.firestore().collection('userInternalConfigs').doc(userId).set(
     {
-      activeCampaignId,
+      activeCampaignContactId,
       providersSentToActiveCampaign: userProviders,
     },
     { merge: true },
@@ -80,18 +80,18 @@ const setUserInternalConfig = ({ userId, activeCampaignId, userProviders }) =>
 const GOOGLE_PROVIDER = 'google.com';
 const PASSWORD_PROVIDER = 'password';
 
-const addGoogleTagToUser = (activeCampaignId) =>
+const addGoogleTagToUser = (activeCampaignContactId) =>
   addTagToUser({
     contactTag: {
-      contact: activeCampaignId,
+      contact: activeCampaignContactId,
       tag: SIGNED_GOOGLE_TAG_ID,
     },
   });
 
-const addPasswordTagToUser = (activeCampaignId) =>
+const addPasswordTagToUser = (activeCampaignContactId) =>
   addTagToUser({
     contactTag: {
-      contact: activeCampaignId,
+      contact: activeCampaignContactId,
       tag: SIGNED_PASSWORD_TAG_ID,
     },
   });
@@ -109,17 +109,17 @@ const run = async () => {
     const userProviders = getUserProviders(user);
     const calendarCount = await getUserCalendarCount(user.uid);
 
-    const activeCampaignId = await createContactFromUser(user, calendarCount);
+    const activeCampaignContactId = await createContactFromUser(user, calendarCount);
     console.log('User added to active campaign!');
 
     const providerPromises = userProviders.map((provider) =>
-      tagToFunction[provider] ? tagToFunction[provider](activeCampaignId) : () => {},
+      tagToFunction[provider] ? tagToFunction[provider](activeCampaignContactId) : () => {},
     );
 
     await Promise.all(providerPromises);
     console.log('User tags 🔖 added to active campaign!');
 
-    await setUserInternalConfig({ userId: user.uid, activeCampaignId, userProviders });
+    await setUserInternalConfig({ userId: user.uid, activeCampaignContactId, userProviders });
     console.log('=> User added to internal config! 🎉');
   }
 
