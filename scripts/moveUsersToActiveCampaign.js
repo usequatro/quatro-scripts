@@ -49,6 +49,11 @@ const createContactFromUser = async (user, calendarCount = 0) => {
   };
 
   const response = await createContact(acPayload);
+
+  if (response.errors && response.errors.find((error) => error.code === 'duplicate')) {
+    return null;
+  }
+
   const activeCampaignContactId = response.contact.id;
   if (!activeCampaignContactId) {
     console.info(JSON.stringify(response));
@@ -102,25 +107,37 @@ const tagToFunction = {
 };
 
 const run = async () => {
+  console.log(`Mode: ${isProd ? 'production list' : 'development list'}`);
   const users = await getAllUsers();
 
   for (const user of users) {
-    console.log('=> Adding user... 🔥');
-    const userProviders = getUserProviders(user);
-    const calendarCount = await getUserCalendarCount(user.uid);
+    console.log('');
 
-    const activeCampaignContactId = await createContactFromUser(user, calendarCount);
-    console.log('User added to active campaign!');
+    try {
+      console.log(`=> Adding user... 🔥 uid=${user.uid} email=${user.email}`);
+      const userProviders = getUserProviders(user);
+      const calendarCount = await getUserCalendarCount(user.uid);
 
-    const providerPromises = userProviders.map((provider) =>
-      tagToFunction[provider] ? tagToFunction[provider](activeCampaignContactId) : () => {},
-    );
+      const activeCampaignContactId = await createContactFromUser(user, calendarCount);
+      if (activeCampaignContactId === null) {
+        console.log(`=> Skipped because contact already in ActiveCampaign`);
+        continue;
+      }
+      console.log(`=> User added to active campaign! contactid=${activeCampaignContactId}`);
 
-    await Promise.all(providerPromises);
-    console.log('User tags 🔖 added to active campaign!');
+      const providerPromises = userProviders.map((provider) =>
+        tagToFunction[provider] ? tagToFunction[provider](activeCampaignContactId) : () => {},
+      );
 
-    await setUserInternalConfig({ userId: user.uid, activeCampaignContactId, userProviders });
-    console.log('=> User added to internal config! 🎉');
+      await Promise.all(providerPromises);
+      console.log('=> User tags 🔖 added to active campaign!');
+
+      await setUserInternalConfig({ userId: user.uid, activeCampaignContactId, userProviders });
+      console.log('=> User added to internal config! 🎉');
+    } catch (error) {
+      console.error(error);
+      continue;
+    }
   }
 
   console.log('Finished running! 🚀');

@@ -19,6 +19,8 @@ One-off scripts for things like data migrations
    ```
 
 1. Run the script you want
+
    ```sh
    npm start scripts/helloWorld
+   npm start scripts/moveUsersToActiveCampaign
    ```
