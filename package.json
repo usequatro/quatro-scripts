@@ -4,8 +4,7 @@
   "description": "One-off scripts for things like data migrations",
   "private": true,
   "scripts": {
-    "start": "npx babel-node",
-    "move-users": "npx babel-node scripts/moveUsersToActiveCampaign.js"
+    "start": "npx babel-node"
   },
   "repository": {
     "type": "git",
