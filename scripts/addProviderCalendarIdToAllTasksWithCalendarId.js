@@ -7,6 +7,7 @@ admin.initializeApp({
   credential: admin.credential.applicationDefault(),
 });
 
+const LIMIT = Infinity;
 const PAGE_LIMIT = 25;
 
 const COLLECTION_TASKS = 'tasks';
@@ -21,11 +22,18 @@ const COLLECTION_CALENDARS = 'calendars';
   let updatedCount = 0;
   let totalCount = 0;
 
-  while (taskSnapshots.docs.length > 0) {
+  // eslint-disable-next-line no-labels
+  outerLoop: while (taskSnapshots.docs.length > 0) {
     console.log(`- Page ${page}: totalCount=${totalCount} updatedCount=${updatedCount}`);
 
     for (const doc of taskSnapshots.docs) {
       totalCount += 1;
+
+      if (totalCount >= LIMIT) {
+        console.log(`Break at limit ${LIMIT}`);
+        // eslint-disable-next-line no-labels
+        break outerLoop;
+      }
 
       const taskId = doc.id;
       const { calendarBlockCalendarId, calendarBlockProviderCalendarId, completed } = doc.data();
@@ -37,7 +45,7 @@ const COLLECTION_CALENDARS = 'calendars';
 
       if (calendarBlockProviderCalendarId) {
         console.log(
-          `⚪️ No changes. task ${taskId} calendarBlockProviderCalendarId set to ${calendarBlockProviderCalendarId}`,
+          `⚪️ No changes. Task ${taskId} with event was fine. calendarBlockProviderCalendarId set to ${calendarBlockProviderCalendarId}`,
         );
         continue;
       }
