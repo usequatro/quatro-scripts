@@ -99,14 +99,18 @@ const migrateRecurringConfig = async (recurringConfig, timeZone) => {
       const timeZone = await getTimeZone(recurringConfig);
 
       const migrated = await migrateRecurringConfig(recurringConfig, timeZone);
+
+      await admin.firestore().collection('recurringConfigs').doc(rcId).update({
+        referenceDate: migrated.referenceDate,
+        taskDetails: migrated.taskDetails,
+      });
+
       console.log(
         `✅  Migrated ${rcId}`,
         migrated.referenceDate,
         migrated.taskDetails.scheduledTime,
         timeZone,
       );
-
-      // @todo: actually save the change
     } catch (error) {
       console.error(`🔥  Error ${rcId} ${error.message}`);
     }
